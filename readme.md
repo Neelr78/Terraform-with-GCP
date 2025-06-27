@@ -1,109 +1,83 @@
-☁️ GCP Composer 3 Setup with Terraform
+# Google Cloud Composer Environment with Terraform
 
-This repository contains Terraform code to set up a Google Cloud Composer 3 environment along with required Google Cloud services and a Cloud Storage bucket for scheduled snapshots.
+This Terraform configuration sets up a **Google Cloud Composer 3** environment on GCP. It includes the necessary service API activations, a GCS bucket for snapshot storage, and scheduled snapshot configuration.
 
-📦 What This Project Does
+## 📁 Project Overview
 
-Enables required GCP APIs for Composer
+This setup includes:
 
-Creates a GCS bucket for Composer environment snapshots
+- Enabling required GCP APIs (Composer, IAM, Storage, etc.)
+- Creating a Cloud Storage bucket for Airflow environment snapshots
+- Deploying a Cloud Composer v3 environment with scheduled snapshot recovery
 
-Provisions a Composer 3 environment using a specified service account
+## ⚙️ Requirements
 
-Configures daily scheduled snapshots to a GCS path
+- Terraform >= 1.0
+- GCP Project with billing enabled
+- A service account with appropriate permissions (see below)
 
-📁 Project Structure
+## 🔑 IAM Permissions
 
-.
-├── main.tf                # Composer environment, API services, and GCS bucket
-└── README.md              # Documentation (this file)
+Ensure the service account used in the Composer environment has the following roles:
 
-🔧 Requirements
+- Composer Admin
+- Storage Admin
+- Service Usage Admin
+- Cloud SQL Admin
+- Compute Viewer
+- Logging Admin
 
-Terraform >= 1.3
+Service account:
+\`gcp-with-terraform@fourth-eon-464116-u5.iam.gserviceaccount.com\`
 
-Google Cloud SDK
+## 🧱 Terraform Resources
 
-Enabled billing on your GCP project
+### Enabled Services
+- composer.googleapis.com
+- cloudresourcemanager.googleapis.com
+- iam.googleapis.com
+- serviceusage.googleapis.com
+- storage.googleapis.com
+- sqladmin.googleapis.com
+- compute.googleapis.com
+- logging.googleapis.com
 
-IAM service account with the following roles:
+### Composer GCS Bucket
+Creates a bucket for Composer snapshots:
+- Name: \`my-composer-snapshots-890\`
+- Location: \`US\`
+- Force Destroy: Enabled
 
-roles/editor
+### Composer Environment
+- Name: \`example-environment\`
+- Image: \`composer-3-airflow-2.10.5\`
+- Snapshots: Daily at 3 AM CST
+- Snapshot storage path: \`gs://my-composer-snapshots-890/snapshots/\`
 
-roles/composer.admin
+## 🚀 Deployment Steps
 
-roles/serviceusage.serviceUsageAdmin
+1. Authenticate with GCP:
 
-roles/storage.admin
-
-🛠️ Setup
-
-1. Authenticate and Set Project
-
+\`\`\`bash
 gcloud auth application-default login
-gcloud config set project fourth-eon-464116-u5
+\`\`\`
 
-2. Grant Permissions to the Service Account
+2. Initialize Terraform:
 
-# Replace with your actual service account email if different
-SERVICE_ACCOUNT="gcp-with-terraform@fourth-eon-464116-u5.iam.gserviceaccount.com"
-
-gcloud projects add-iam-policy-binding fourth-eon-464116-u5 \
-  --member="serviceAccount:$SERVICE_ACCOUNT" \
-  --role="roles/composer.admin"
-
-gcloud projects add-iam-policy-binding fourth-eon-464116-u5 \
-  --member="serviceAccount:$SERVICE_ACCOUNT" \
-  --role="roles/serviceusage.serviceUsageAdmin"
-
-gcloud projects add-iam-policy-binding fourth-eon-464116-u5 \
-  --member="serviceAccount:$SERVICE_ACCOUNT" \
-  --role="roles/storage.admin"
-
-3. Initialize and Apply Terraform
-
+\`\`\`bash
 terraform init
+\`\`\`
+
+3. Apply the configuration:
+
+\`\`\`bash
 terraform apply
+\`\`\`
 
-📌 Notes
+## 📎 Notes
 
-Composer 3 uses the google-beta provider and supports scheduled_snapshots_config for automated Airflow snapshots.
+- Ensure the GCP project ID is correct in all resources.
+- Make sure the service account has enough permissions to manage services and create Composer environments.
+- The snapshot time zone is set to \`UTC-06\` (Central Time).
 
-Snapshots are stored in the my-composer-snapshots-890 bucket under /snapshots/.
-
-Snapshots are created daily at 3 AM CST (UTC-06).
-
-📂 Services Enabled
-
-The following Google Cloud APIs will be enabled automatically:
-
-composer.googleapis.com
-
-cloudresourcemanager.googleapis.com
-
-iam.googleapis.com
-
-serviceusage.googleapis.com
-
-storage.googleapis.com
-
-sqladmin.googleapis.com
-
-compute.googleapis.com
-
-logging.googleapis.com
-
-📂 Output
-
-After deployment, you will have:
-
-A Composer 3 environment named example-environment
-
-A snapshot-enabled Cloud Storage bucket (my-composer-snapshots-890)
-
-Scheduled DAG snapshots taken daily
-
-📝 License
-
-MIT License – feel free to use, modify, and share.
-
+EOF
