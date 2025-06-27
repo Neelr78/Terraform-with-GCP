@@ -64,15 +64,15 @@ gcloud auth application-default login
 
 2. Initialize Terraform:
 
-\`\`\`bash
+```bash
 terraform init
-\`\`\`
+```
 
 3. Apply the configuration:
 
-\`\`\`bash
+```bash
 terraform apply
-\`\`\`
+```
 
 ## 📎 Notes
 
