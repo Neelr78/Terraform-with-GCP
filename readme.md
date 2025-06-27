@@ -80,4 +80,4 @@ terraform apply
 - Make sure the service account has enough permissions to manage services and create Composer environments.
 - The snapshot time zone is set to \`UTC-06\` (Central Time).
 
-EOF
+
