@@ -58,9 +58,9 @@ Creates a bucket for Composer snapshots:
 
 1. Authenticate with GCP:
 
-\`\`\`bash
+```bash
 gcloud auth application-default login
-\`\`\`
+```
 
 2. Initialize Terraform:
 
